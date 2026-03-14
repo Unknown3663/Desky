@@ -33,6 +33,32 @@
     if (file) importSettings(file)
   }
 
+  function previewSound(type) {
+    if (type === 'none') return
+    try {
+      if (!window._pomAudioCtx) window._pomAudioCtx = new (window.AudioContext || window.webkitAudioContext)()
+      const ctx = window._pomAudioCtx
+      const sounds = {
+        chime:       [{ f: 523, t: 0, d: 0.4 }, { f: 659, t: 0.15, d: 0.4 }, { f: 784, t: 0.3, d: 0.6 }],
+        beep:        [{ f: 880, t: 0, d: 0.15 }, { f: 880, t: 0.2, d: 0.15 }],
+        bell:        [{ f: 440, t: 0, d: 1.2 }, { f: 880, t: 0.05, d: 0.8 }],
+        'soft ping': [{ f: 660, t: 0, d: 0.5 }],
+      }
+      const notes = sounds[type] || sounds['soft ping']
+      notes.forEach(({ f, t, d }) => {
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.connect(gain); gain.connect(ctx.destination)
+        osc.frequency.value = f
+        osc.type = type === 'beep' ? 'square' : 'sine'
+        const start = ctx.currentTime + t
+        gain.gain.setValueAtTime(0.3, start)
+        gain.gain.exponentialRampToValueAtTime(0.001, start + d)
+        osc.start(start); osc.stop(start + d)
+      })
+    } catch {}
+  }
+
   function handleReset() {
     if (confirm('reset all settings to defaults?')) resetSettings()
   }
@@ -150,6 +176,62 @@
     </section>
 
     <section>
+      <div class="label">pomodoro durations</div>
+      <div class="col">
+        {#each [
+          { key: 'pomFocusDuration',       label: 'focus',       max: 120, unit: 'min' },
+          { key: 'pomShortBreakDuration',  label: 'short break', max: 60,  unit: 'min' },
+          { key: 'pomLongBreakDuration',   label: 'long break',  max: 60,  unit: 'min' },
+          { key: 'pomSessions',            label: 'sessions',    max: 10,  unit: 'before long break' },
+        ] as d}
+          <div class="dur-item">
+            <span class="dur-key">{d.label}</span>
+            <input class="num-input" type="number" min="1" max={d.max}
+              value={settings[d.key]}
+              oninput={e => set(d.key, +e.target.value)} />
+            <span class="unit">{d.unit}</span>
+          </div>
+        {/each}
+      </div>
+    </section>
+
+    <section>
+      <div class="label">auto-start</div>
+      <div class="row wrap">
+        <button onclick={() => set('pomAutoStartFocus', !settings.pomAutoStartFocus)}>
+          {settings.pomAutoStartFocus ? '[x]' : '[ ]'} focus sessions
+        </button>
+        <button onclick={() => set('pomAutoStartBreaks', !settings.pomAutoStartBreaks)}>
+          {settings.pomAutoStartBreaks ? '[x]' : '[ ]'} breaks
+        </button>
+      </div>
+    </section>
+
+    <section>
+      <div class="label">sound cues</div>
+      <div class="col">
+        {#each [
+          { key: 'pomSoundFocusStart', label: 'focus start' },
+          { key: 'pomSoundBreakStart', label: 'break start' },
+          { key: 'pomSoundAllDone',    label: 'all done' },
+        ] as s}
+          <div class="dur-item">
+            <span class="dur-key">{s.label}</span>
+            <select class="sound-select" value={settings[s.key]}
+              onchange={e => set(s.key, e.target.value)}>
+              <option value="chime">chime</option>
+              <option value="beep">beep</option>
+              <option value="bell">bell</option>
+              <option value="soft ping">soft ping</option>
+              <option value="none">none</option>
+            </select>
+            <button onclick={() => previewSound(settings[s.key])}>[play]</button>
+          </div>
+        {/each}
+      </div>
+    </section>
+
+    <section>
       <div class="label">custom css</div>
       <textarea class="css-input" placeholder="/* add your custom styles here */"
         oninput={e => set('customCSS', e.target.value)}>{settings.customCSS}</textarea>
@@ -220,4 +302,20 @@
   }
   .css-input:focus { border-color: var(--txt-4); color: var(--txt-2); outline: none; }
   .danger:hover { color: var(--txt-err); }
+  .col { display: flex; flex-direction: column; gap: 0.5rem; }
+  .dur-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; }
+  .dur-key { color: var(--txt-3); min-width: 80px; flex-shrink: 0; }
+  .num-input {
+    background: var(--bg-2); border: 1px solid var(--bg-3);
+    color: var(--txt-2); font-family: inherit; font-size: 0.82rem;
+    padding: 0.3rem 0.5rem; width: 56px; outline: none;
+  }
+  .num-input:focus { border-color: var(--txt-4); }
+  .unit { color: var(--txt-4); font-size: 0.78rem; white-space: nowrap; }
+  .sound-select {
+    background: var(--bg-2); border: 1px solid var(--bg-3);
+    color: var(--txt-2); font-family: inherit; font-size: 0.82rem;
+    padding: 0.3rem 0.5rem; outline: none; cursor: pointer; width: 100px;
+  }
+  .sound-select:focus { border-color: var(--txt-4); }
 </style>

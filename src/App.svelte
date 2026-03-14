@@ -6,6 +6,7 @@
   import Weather from './lib/components/Weather.svelte'
   import Tasks from './lib/components/Tasks.svelte'
   import Settings from './lib/components/Settings.svelte'
+  import Pomodoro from './lib/components/Pomodoro.svelte'
 
   let showSettings = $state(false)
 
@@ -46,12 +47,9 @@
     {#if settings.showTasks}
       <div class="tasks"><Tasks /></div>
     {/if}
-    <div class="coming-soon">
-      <div class="panel-wrapper">
-        <div class="panel-label">Coming Soon...</div>
-        <div class="panel coming-soon-panel"></div>
-      </div>
-    </div>
+    {#if settings.showPomodoro}
+      <div class="pomodoro"><Pomodoro /></div>
+    {/if}
 
   </div>
 
@@ -101,31 +99,25 @@
     grid-column: 2 / 4;
     grid-row: 2;
   }
-  .coming-soon {
+  .pomodoro {
     grid-column: 1 / 4;
     grid-row: 3;
   }
-
-  /* stretch panels to fill their cell height */
-  .datetime, .stats, .weather, .coming-soon {
+  .datetime, .stats, .weather, .tasks {
     min-width: 0;
   }
   .datetime :global(.panel-wrapper),
   .stats :global(.panel-wrapper),
   .weather :global(.panel-wrapper),
-  .coming-soon :global(.panel-wrapper) {
+  .tasks :global(.panel-wrapper) {
     height: 100%;
   }
   .datetime :global(.panel),
   .stats :global(.panel),
   .weather :global(.panel),
-  .coming-soon :global(.panel) {
+  .tasks :global(.panel) {
     height: 100%;
     box-sizing: border-box;
-  }
-
-  .coming-soon-panel {
-    min-height: 60px;
   }
 
   .settings-btn {
