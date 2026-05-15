@@ -50,6 +50,7 @@ const defaultSettings = {
   pomSoundFocusStart: "chime",
   pomSoundBreakStart: "soft ping",
   pomSoundAllDone: "bell",
+  showClock: true,
   showPomodoro: true,
   showStats: true,
   showWeather: true,
