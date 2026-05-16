@@ -10,11 +10,16 @@
   import Titlebar from './lib/components/Titlebar.svelte'
 
   let showSettings = $state(false)
+  let isTauri = $state(false)
 
   const needsConfig = $derived(
     settings.locationMode === 'manual' &&
     (settings.latitude === null || settings.longitude === null)
   )
+
+  $effect(() => {
+    isTauri = typeof window !== 'undefined' && typeof window.__TAURI__ !== 'undefined'
+  })
 
   $effect(() => {
     document.documentElement.className = 'theme-' + (settings.currentTheme || 'default')
@@ -33,7 +38,9 @@
   $effect(() => { saveSettings(settings) })
 </script>
 
-<Titlebar />
+{#if isTauri}
+  <Titlebar />
+{/if}
 
 <main>
   <div class="container">
@@ -75,7 +82,7 @@
     overflow: hidden;
     justify-content: center;
     align-items: center;
-    padding: calc(1.5rem + 30px) 1rem 1.5rem 1rem;
+    padding: calc(1.5rem + var(--titlebar-height)) 1rem 1.5rem 1rem;
   }
 
   .container {
@@ -124,7 +131,7 @@
   }
 
   .settings-btn {
-    position: fixed; top: 30px; right: 0;
+    position: fixed; top: var(--titlebar-height); right: 0;
     padding: 1rem 1.5rem;
     opacity: 0; z-index: 100; color: var(--txt-3);
     &:hover { opacity: 1; }

@@ -313,9 +313,8 @@
   .num-input:focus { border-color: var(--txt-4); }
   .unit { color: var(--txt-4); font-size: 0.78rem; white-space: nowrap; }
   .sound-select {
-    background: var(--bg-2); border: 1px solid var(--bg-3);
-    color: var(--txt-2); font-family: inherit; font-size: 0.82rem;
-    padding: 0.3rem 0.5rem; outline: none; cursor: pointer; width: 100px;
+    width: 100px;
+    padding: 0.3rem 1.8rem 0.3rem 0.5rem;
   }
   .sound-select:focus { border-color: var(--txt-4); }
 </style>

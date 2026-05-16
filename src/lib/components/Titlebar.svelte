@@ -1,20 +1,29 @@
 <script>
-  import { getCurrentWindow } from '@tauri-apps/api/window'
-
   const isMac = navigator.platform.toLowerCase().includes('mac')
 
-  const appWindow = getCurrentWindow()
+  let appWindow = $state(null)
+
+  $effect(() => {
+    if (typeof window !== 'undefined' && window.__TAURI__) {
+      import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
+        appWindow = getCurrentWindow()
+      }).catch(() => {})
+    }
+  })
 
   async function minimize() {
-    await appWindow.minimize()
+    if (!appWindow) return
+    try { await appWindow.minimize() } catch {}
   }
 
   async function toggleMaximize() {
-    await appWindow.toggleMaximize()
+    if (!appWindow) return
+    try { await appWindow.toggleMaximize() } catch {}
   }
 
   async function close() {
-    await appWindow.close()
+    if (!appWindow) return
+    try { await appWindow.close() } catch {}
   }
 </script>
 
@@ -38,7 +47,7 @@
 
 <style>
   .titlebar {
-    height: 30px;
+    height: var(--titlebar-height);
     background: var(--bg-1);
     display: flex;
     align-items: center;
@@ -76,6 +85,7 @@
     border: none;
     cursor: pointer;
     line-height: 1;
+    transition: color 0.15s ease;
   }
 
   button:hover {
