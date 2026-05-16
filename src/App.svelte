@@ -7,6 +7,7 @@
   import Tasks from './lib/components/Tasks.svelte'
   import Settings from './lib/components/Settings.svelte'
   import Pomodoro from './lib/components/Pomodoro.svelte'
+  import Titlebar from './lib/components/Titlebar.svelte'
 
   let showSettings = $state(false)
 
@@ -31,6 +32,8 @@
 
   $effect(() => { saveSettings(settings) })
 </script>
+
+<Titlebar />
 
 <main>
   <div class="container">
@@ -72,7 +75,7 @@
     overflow: hidden;
     justify-content: center;
     align-items: center;
-    padding: 1.5rem 1rem;
+    padding: calc(1.5rem + 30px) 1rem 1.5rem 1rem;
   }
 
   .container {
@@ -121,7 +124,7 @@
   }
 
   .settings-btn {
-    position: fixed; top: 0; right: 0;
+    position: fixed; top: 30px; right: 0;
     padding: 1rem 1.5rem;
     opacity: 0; z-index: 100; color: var(--txt-3);
     &:hover { opacity: 1; }
