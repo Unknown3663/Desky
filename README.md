@@ -7,12 +7,14 @@ A beautiful, customizable desktop dashboard/startpage built with Tauri and Svelt
 ## Features
 
 ### 🕐 Date & Time
+
 - Large, elegant clock display
 - Configurable time format (12h/24h)
 - Date display with customizable format (MDY/DMY)
 - Automatically detects your system preferences
 
 ### 🌤️ Weather
+
 - Current weather conditions
 - Hourly and daily forecasts
 - Support for Celsius and Fahrenheit
@@ -20,12 +22,14 @@ A beautiful, customizable desktop dashboard/startpage built with Tauri and Svelt
 - Wind speed in km/h or mph
 
 ### 📝 Tasks
+
 - Simple task management
 - Add, complete, and delete tasks
 - Persistent storage (localStorage)
 - Clean, minimal interface
 
 ### 🍅 Pomodoro Timer
+
 - Focus sessions with customizable durations
 - Short and long break support
 - Configurable session counts before long break
@@ -33,12 +37,14 @@ A beautiful, customizable desktop dashboard/startpage built with Tauri and Svelt
 - Auto-start options for focus and breaks
 
 ### 📊 Stats
+
 - Page load time
 - Network latency/ping
 - Frames per second (FPS)
 - Viewport dimensions
 
 ### 🎨 Customization
+
 - Multiple themes (default + custom)
 - Custom CSS injection
 - Font selection (defaults to Geist Mono)
@@ -54,6 +60,15 @@ A beautiful, customizable desktop dashboard/startpage built with Tauri and Svelt
 - **pnpm** (recommended) or npm/yarn
 - **Rust** (latest stable)
 - **Cargo** (comes with Rust)
+- **Linux only**: WebKitGTK and GTK runtime libraries for Tauri 2, including `libwebkit2gtk-4.1.so.0`
+
+On Arch Linux, install the missing runtime pieces with:
+
+```bash
+sudo pacman -S webkit2gtk-4.1 javascriptcoregtk-4.1 libsoup3 gtk3
+```
+
+The `sudo` is only needed for installing system packages. Run `pnpm tauri dev` as your normal user.
 
 ### Quick Start
 
@@ -77,6 +92,7 @@ pnpm tauri:build
 ```
 
 The built executable will be in:
+
 - Linux: `src-tauri/target/release/desky`
 - macOS: `src-tauri/target/release/desky.app`
 - Windows: `src-tauri/target/release/desky.exe`
@@ -145,14 +161,14 @@ desky/
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Run frontend dev server |
-| `pnpm build` | Build frontend for production |
-| `pnpm preview` | Preview built frontend |
-| `pnpm tauri:dev` | Run full Tauri dev mode |
-| `pnpm tauri:build` | Build Tauri application |
-| `pnpm tauri:build -- --debug` | Build with debug symbols |
+| Command                       | Description                   |
+| ----------------------------- | ----------------------------- |
+| `pnpm dev`                    | Run frontend dev server       |
+| `pnpm build`                  | Build frontend for production |
+| `pnpm preview`                | Preview built frontend        |
+| `pnpm tauri:dev`              | Run full Tauri dev mode       |
+| `pnpm tauri:build`            | Build Tauri application       |
+| `pnpm tauri:build -- --debug` | Build with debug symbols      |
 
 ## Configuration
 
@@ -161,6 +177,7 @@ desky/
 Desky uses a weather API for forecast data. By default, it uses Open-Meteo (free, no API key required).
 
 To use a different weather service:
+
 1. Open Settings (click the gear icon)
 2. Navigate to Weather settings
 3. Enter your API endpoint and key
@@ -225,6 +242,7 @@ Create custom themes by modifying the color palette in Settings.
 ### Data Storage
 
 All settings and tasks are stored in your browser's localStorage:
+
 - Settings: `startpage-settings`
 - Tasks: `startpage-tasks`
 
@@ -233,15 +251,18 @@ All settings and tasks are stored in your browser's localStorage:
 ### Common Issues
 
 **Weather not working**
+
 - Ensure location permissions are granted
 - Check API endpoint configuration
 - Verify internet connectivity
 
 **Pomodoro sounds not playing**
+
 - Check browser/audio permissions
 - Ensure sound files are loaded
 
 **Build fails**
+
 - Ensure Rust and Node.js are up to date
 - Run `pnpm install` to fetch all dependencies
 - Check for cargo dependency issues: `cd src-tauri && cargo update`

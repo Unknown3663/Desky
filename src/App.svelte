@@ -9,17 +9,16 @@
   import Pomodoro from './lib/components/Pomodoro.svelte'
   import Titlebar from './lib/components/Titlebar.svelte'
 
+  // Only render Titlebar when running in a Tauri environment to avoid
+  // referencing Tauri globals on web/non-Tauri builds.
+  const isTauri = typeof window !== 'undefined' && !!window.__TAURI__
+
   let showSettings = $state(false)
-  let isTauri = $state(false)
 
   const needsConfig = $derived(
     settings.locationMode === 'manual' &&
     (settings.latitude === null || settings.longitude === null)
   )
-
-  $effect(() => {
-    isTauri = typeof window !== 'undefined' && typeof window.__TAURI__ !== 'undefined'
-  })
 
   $effect(() => {
     document.documentElement.className = 'theme-' + (settings.currentTheme || 'default')

@@ -45,7 +45,23 @@
     })
   }
 
+  async function getIpLocation() {
+    const r = await fetch('https://ipapi.co/json/')
+    if (!r.ok) throw new Error('ip location request failed')
+
+    const d = await r.json()
+    if (typeof d.latitude !== 'number' || typeof d.longitude !== 'number') {
+      throw new Error('invalid ip location response')
+    }
+
+    return {
+      latitude: Math.round(d.latitude * 100) / 100,
+      longitude: Math.round(d.longitude * 100) / 100,
+    }
+  }
+
   export async function loadWeather() {
+    error = null
     loading = true
     let lat = settings.latitude, lon = settings.longitude
 
@@ -56,9 +72,8 @@
       } catch {
         // fallback to IP
         try {
-          const r = await fetch('https://ipapi.co/json/')
-          const d = await r.json()
-          lat = d.latitude; lon = d.longitude
+          const loc = await getIpLocation()
+          lat = loc.latitude; lon = loc.longitude
         } catch {
           error = 'location unavailable'; loading = false; return
         }
