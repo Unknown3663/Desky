@@ -71,7 +71,7 @@ jobs:
 
       - name: Build Tauri app (Linux — deb + rpm + appimage)
         if: matrix.os == 'ubuntu-latest'
-        run: pnpm tauri:build -- --bundles deb,rpm,appimage
+        run: pnpm exec tauri build --bundles deb,rpm,appimage
 
       - name: Build Tauri app (Windows / macOS)
         if: matrix.os != 'ubuntu-latest'
