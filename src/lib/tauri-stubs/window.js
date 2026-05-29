@@ -8,10 +8,3 @@ export function getCurrentWindow() {
 }
 
 export default { getCurrentWindow };
-export function getCurrentWindow() {
-  return {
-    minimize() {},
-    toggleMaximize() {},
-    close() {},
-  };
-}

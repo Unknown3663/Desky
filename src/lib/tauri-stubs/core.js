@@ -4,6 +4,3 @@ export async function isTauri() {
 }
 
 export default { isTauri };
-export async function isTauri() {
-  return false;
-}
