@@ -60,7 +60,14 @@ A beautiful, customizable desktop dashboard/startpage built with Tauri and Svelt
 - **pnpm** (recommended) or npm/yarn
 - **Rust** (latest stable)
 - **Cargo** (comes with Rust)
-- **Linux only**: WebKitGTK and GTK runtime libraries for Tauri 2, including `libwebkit2gtk-4.1.so.0`
+
+### Desktop runtime notes
+
+Tauri desktop builds need the native runtime tools for the target OS:
+
+- **Linux**: WebKitGTK and GTK runtime libraries for Tauri 2, including `libwebkit2gtk-4.1.so.0`
+- **Windows**: Visual Studio C++ build tools and the WebView2 runtime
+- **macOS**: Xcode command line tools
 
 On Arch Linux, install the missing runtime pieces with:
 
@@ -69,6 +76,13 @@ sudo pacman -S webkit2gtk-4.1 javascriptcoregtk-4.1 libsoup3 gtk3
 ```
 
 The `sudo` is only needed for installing system packages. Run `pnpm tauri dev` as your normal user.
+
+### Web runtime
+
+The web version only needs the Node.js toolchain. Use the regular Vite commands:
+
+- `pnpm dev` for local development
+- `pnpm build` for a production web bundle
 
 ### Quick Start
 

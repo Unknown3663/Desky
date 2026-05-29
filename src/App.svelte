@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte'
   import './app.css'
   import { settings, saveSettings } from './lib/settings-store.svelte.js'
   import DateTime from './lib/components/DateTime.svelte'
@@ -9,10 +10,7 @@
   import Pomodoro from './lib/components/Pomodoro.svelte'
   import Titlebar from './lib/components/Titlebar.svelte'
 
-  // Only render Titlebar when running in a Tauri environment to avoid
-  // referencing Tauri globals on web/non-Tauri builds.
-  const isTauri = typeof window !== 'undefined' && !!window.__TAURI__
-
+  let hasDesktopShell = $state(false)
   let showSettings = $state(false)
 
   const needsConfig = $derived(
@@ -21,23 +19,71 @@
   )
 
   $effect(() => {
-    document.documentElement.className = 'theme-' + (settings.currentTheme || 'default')
+    if (typeof document !== 'undefined') {
+      document.documentElement.className = 'theme-' + (settings.currentTheme || 'default')
+    }
   })
 
   $effect(() => {
-    document.documentElement.style.setProperty('--font-family', `'${settings.font || 'Geist Mono'}', monospace`)
+    if (typeof document !== 'undefined') {
+      document.documentElement.style.setProperty('--font-family', `'${settings.font || 'Geist Mono'}', monospace`)
+    }
   })
 
   $effect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.style.setProperty('--titlebar-height', hasDesktopShell ? '30px' : '0px')
+    }
+  })
+
+  $effect(() => {
+    if (typeof document === 'undefined') return
     let el = document.getElementById('custom-css')
-    if (!el) { el = document.createElement('style'); el.id = 'custom-css'; document.head.appendChild(el) }
+    if (!el) {
+      el = document.createElement('style')
+      el.id = 'custom-css'
+      document.head.appendChild(el)
+    }
     el.textContent = settings.customCSS || ''
   })
 
   $effect(() => { saveSettings(settings) })
+
+  function setShell(active) {
+    hasDesktopShell = !!active
+    try {
+      if (typeof document !== 'undefined') {
+        if (hasDesktopShell) document.documentElement.classList.add('tauri-shell')
+        else document.documentElement.classList.remove('tauri-shell')
+      }
+    } catch (err) { console.debug('setShell failed', err) }
+  }
+
+  async function probeTauri() {
+    // cheap immediate guard
+    if (typeof globalThis !== 'undefined' && globalThis.__TAURI__) {
+      setShell(true)
+      return
+    }
+    try {
+      const core = await import('@tauri-apps/api/core')
+      const is = await core.isTauri()
+      setShell(!!is)
+    } catch (err) {
+      // don't pollute console in normal web use, but allow debug visibility
+      console.debug('tauri probe failed', err)
+      setShell(false)
+    }
+  }
+
+  onMount(() => {
+    probeTauri()
+    // small retry in case Tauri injects globals shortly after mount (dev mode)
+    setTimeout(probeTauri, 300)
+  })
 </script>
 
-{#if isTauri}
+{#if hasDesktopShell}
   <Titlebar />
 {/if}
 

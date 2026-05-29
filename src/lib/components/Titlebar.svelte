@@ -1,52 +1,58 @@
 <script>
-  const isMac = navigator.platform.toLowerCase().includes('mac')
+  import { onMount } from 'svelte'
+
+  // reactive platform flag
+  let isMac = $state(typeof navigator !== 'undefined' && ((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '').toLowerCase().includes('mac'))
 
   let appWindow = $state(null)
 
-  $effect(() => {
-    if (typeof window !== 'undefined' && window.__TAURI__) {
-      import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
+  onMount(() => {
+    import('@tauri-apps/api/window')
+      .then(({ getCurrentWindow }) => {
         appWindow = getCurrentWindow()
-      }).catch(() => {})
-    }
+        // we rely on navigator as the fallback for platform detection; if we later
+        // want Tauri-specific os info we can add it behind another dynamic import
+      })
+      .catch((err) => { console.debug('tauri window import failed', err); appWindow = null })
   })
 
   async function minimize() {
     if (!appWindow) return
-    try { await appWindow.minimize() } catch {}
+    try { await appWindow.minimize() } catch (err) { console.debug('minimize failed', err) }
   }
 
   async function toggleMaximize() {
     if (!appWindow) return
-    try { await appWindow.toggleMaximize() } catch {}
+    try { await appWindow.toggleMaximize() } catch (err) { console.debug('toggleMaximize failed', err) }
   }
 
   async function close() {
     if (!appWindow) return
-    try { await appWindow.close() } catch {}
+    try { await appWindow.close() } catch (err) { console.debug('close failed', err) }
   }
 </script>
 
 <div class="titlebar" data-tauri-drag-region>
-  {#if isMac}
-    <div class="controls" style="left: 0.5rem">
-      <button onclick={close}>[x]</button>
-      <button onclick={minimize}>[-]</button>
-      <button onclick={toggleMaximize}>[+]</button>
+  {#if appWindow && isMac}
+    <div class="controls" style="left: 0.5rem" role="toolbar">
+      <button aria-label="close" onclick={close}>[x]</button>
+      <button aria-label="minimize" onclick={minimize}>[-]</button>
+      <button aria-label="maximize" onclick={toggleMaximize}>[+]</button>
     </div>
   {/if}
   <div class="title">Desky</div>
-  {#if !isMac}
-    <div class="controls" style="right: 0.5rem">
-      <button onclick={minimize}>[-]</button>
-      <button onclick={toggleMaximize}>[+]</button>
-      <button onclick={close}>[x]</button>
+  {#if appWindow && !isMac}
+    <div class="controls" style="right: 0.5rem" role="toolbar">
+      <button aria-label="minimize" onclick={minimize}>[-]</button>
+      <button aria-label="maximize" onclick={toggleMaximize}>[+]</button>
+      <button aria-label="close" onclick={close}>[x]</button>
     </div>
   {/if}
 </div>
 
 <style>
-  .titlebar {
+  /* apply drag region only when running inside Tauri (body will have .tauri-shell) */
+  :global(.tauri-shell) .titlebar {
     height: var(--titlebar-height);
     background: var(--bg-1);
     display: flex;
@@ -65,7 +71,7 @@
     position: absolute;
   }
 
-  :global(.titlebar .controls button) {
+  :global(.tauri-shell) .titlebar .controls button {
     -webkit-app-region: no-drag;
   }
 
