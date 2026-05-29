@@ -114,4 +114,11 @@ jobs:
           name: Release ${{ github.ref_name }}
           draft: false
           artifacts: |
-            artifacts/**
+            artifacts/**/*.deb
+            artifacts/**/*.rpm
+            artifacts/**/*.AppImage
+            artifacts/**/*.appimage
+            artifacts/**/*.msi
+            artifacts/**/*.exe
+            artifacts/**/*.dmg
+            artifacts/**/*.pkg
